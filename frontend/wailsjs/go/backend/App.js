@@ -6,6 +6,10 @@ export function CheckAuth() {
   return window['go']['backend']['App']['CheckAuth']();
 }
 
+export function GetList() {
+  return window['go']['backend']['App']['GetList']();
+}
+
 export function Greet(arg1) {
   return window['go']['backend']['App']['Greet'](arg1);
 }

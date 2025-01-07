@@ -3,15 +3,16 @@ package entity
 type GdtfFixture struct {
 	Rid          int               `json:"rid"`
 	Fixture      string            `json:"fixture"`
+	Manufacturer string            `json:"manufacturer"`
 	Revision     string            `json:"Revision"`
-	CreationDate string            `json:"creationDate"`
-	LastModified string            `json:"lastModified"`
+	CreationDate int               `json:"creationDate"`
+	LastModified int               `json:"lastModified"`
 	Uploader     string            `json:"uploader"`
-	Rating       float64           `json:"rating"`
+	Rating       string            `json:"rating"`
 	Version      string            `json:"version"`
 	Creator      string            `json:"creator"`
 	Uuid         string            `json:"uuid"`
-	Filesize     string            `json:"filesize"`
+	Filesize     int               `json:"filesize"`
 	Modes        []GdtfFixtureMode `json:"modes"`
 }
 

@@ -132,3 +132,40 @@ func (a *App) SaveCredentials(user string, password string) bool {
 
 	return a.CheckAuth()
 }
+
+func (a *App) GetList() []entity.GdtfFixture {
+	listurl := "https://gdtf-share.com/apis/public/getList.php"
+
+	r, err := http.NewRequest("GET", listurl, nil)
+	r.AddCookie(a.authCookie)
+	if err != nil {
+		panic(err)
+	}
+
+	r.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	res, err := client.Do(r)
+	if err != nil {
+		panic(err)
+	}
+
+	if len(res.Cookies()) > 0 {
+		a.authCookie = res.Cookies()[0]
+		a.authExpired = time.Now().Add(time.Duration(time.Duration(59).Minutes()))
+	}
+
+	defer res.Body.Close()
+
+	list := &entity.GdtfGetListResponse{}
+	derr := json.NewDecoder(res.Body).Decode(list)
+	if derr != nil {
+		panic(derr)
+	}
+
+	if !list.Result {
+		runtime.EventsEmit(a.ctx, "notification", &entity.Notification{Value: list.Error})
+	}
+
+	return list.List
+}

@@ -4,13 +4,15 @@ import (
 	"context"
 	"fmt"
 	"gdtfbox/backend/entity"
+	"net/http"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
 type App struct {
-	ctx context.Context
+	ctx        context.Context
+	authCookie http.Cookie
 }
 
 // NewApp creates a new App application struct

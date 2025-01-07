@@ -10,6 +10,10 @@ export function Greet(arg1) {
   return window['go']['backend']['App']['Greet'](arg1);
 }
 
+export function InitDatabase() {
+  return window['go']['backend']['App']['InitDatabase']();
+}
+
 export function SaveCredentials(arg1, arg2) {
   return window['go']['backend']['App']['SaveCredentials'](arg1, arg2);
 }

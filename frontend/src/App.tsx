@@ -1,7 +1,7 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import Notifications from './components/elements/notifications';
-import { CheckAuth, Greet } from '../wailsjs/go/backend/App';
+import { CheckAuth } from '../wailsjs/go/backend/App';
 import NoAuthView from './views/no-auth';
 
 function App() {

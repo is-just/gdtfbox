@@ -14,10 +14,6 @@ function App() {
 
     useEffect(() => {
         checkAuth();
-
-        EventsOn("authChange", () => {
-            checkAuth();
-        })
     }, [])
 
     useEffect(() => {

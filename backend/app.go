@@ -94,7 +94,7 @@ func (a *App) CheckAuth() bool {
 	client := &http.Client{}
 	res, err := client.Do(r)
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 
 	if len(res.Cookies()) > 0 {
@@ -107,14 +107,14 @@ func (a *App) CheckAuth() bool {
 	signin := &entity.GdtfLoginResponse{}
 	derr := json.NewDecoder(res.Body).Decode(signin)
 	if derr != nil {
-		panic(derr)
+		panic(derr.Error())
 	}
 
 	if !signin.Result {
 		runtime.EventsEmit(a.ctx, "notification", &entity.Notification{Value: signin.Error})
 	}
 
-	runtime.EventsEmit(a.ctx, "authChange")
+	runtime.EventsEmit(a.ctx, "authChange", true)
 
 	return signin.Result
 }

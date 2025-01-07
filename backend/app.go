@@ -114,6 +114,8 @@ func (a *App) CheckAuth() bool {
 		runtime.EventsEmit(a.ctx, "notification", &entity.Notification{Value: signin.Error})
 	}
 
+	runtime.EventsEmit(a.ctx, "authChange")
+
 	return signin.Result
 }
 

@@ -4,6 +4,7 @@ import Notifications from './components/elements/notifications';
 import { CheckAuth, GetList } from '../wailsjs/go/backend/App';
 import NoAuthView from './views/no-auth';
 import ListView from './views/list-view';
+import { EventsOn } from '../wailsjs/runtime/runtime';
 
 function App() {
 
@@ -13,6 +14,10 @@ function App() {
 
     useEffect(() => {
         checkAuth();
+
+        EventsOn("authChange", () => {
+            checkAuth();
+        })
     }, [])
 
     useEffect(() => {

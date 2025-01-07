@@ -7,7 +7,10 @@ import (
 	"fmt"
 	"gdtfbox/backend/entity"
 	"gdtfbox/backend/model"
+	"io"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -91,7 +94,7 @@ func (a *App) CheckAuth() bool {
 	client := &http.Client{}
 	res, err := client.Do(r)
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 
 	if len(res.Cookies()) > 0 {
@@ -104,12 +107,14 @@ func (a *App) CheckAuth() bool {
 	signin := &entity.GdtfLoginResponse{}
 	derr := json.NewDecoder(res.Body).Decode(signin)
 	if derr != nil {
-		panic(derr)
+		panic(derr.Error())
 	}
 
 	if !signin.Result {
 		runtime.EventsEmit(a.ctx, "notification", &entity.Notification{Value: signin.Error})
 	}
+
+	runtime.EventsEmit(a.ctx, "authChange", true)
 
 	return signin.Result
 }
@@ -131,4 +136,136 @@ func (a *App) SaveCredentials(user string, password string) bool {
 	}
 
 	return a.CheckAuth()
+}
+
+func (a *App) GetList() []entity.GdtfFixture {
+	listurl := "https://gdtf-share.com/apis/public/getList.php"
+
+	r, err := http.NewRequest("GET", listurl, nil)
+	r.AddCookie(a.authCookie)
+	if err != nil {
+		panic(err)
+	}
+
+	r.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	res, err := client.Do(r)
+	if err != nil {
+		panic(err)
+	}
+
+	if len(res.Cookies()) > 0 {
+		a.authCookie = res.Cookies()[0]
+		a.authExpired = time.Now().Add(time.Duration(time.Duration(59).Minutes()))
+	}
+
+	defer res.Body.Close()
+
+	list := &entity.GdtfGetListResponse{}
+	derr := json.NewDecoder(res.Body).Decode(list)
+	if derr != nil {
+		panic(derr)
+	}
+
+	if !list.Result {
+		runtime.EventsEmit(a.ctx, "notification", &entity.Notification{Value: list.Error})
+	}
+
+	return list.List
+}
+
+func (a *App) SetDestFolder() {
+
+	dest, err := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if dest == "" {
+		fmt.Println("No dest defined")
+	}
+
+	var destModel = model.Config{Type: "dest", Value: dest}
+
+	if a.db.Model(&destModel).Where("type = ?", "dest").Update("value", dest).RowsAffected == 0 {
+		a.db.Create(&destModel)
+	}
+}
+
+func (a *App) DownloadFixture(fixture entity.GdtfFixture, storedDest bool) {
+	var dest = ""
+
+	if storedDest {
+		destModel := model.Config{}
+
+		if err := a.db.Model(&destModel).Where("type = ?", "dest").First(&destModel).Error; err != nil {
+			runtime.EventsEmit(a.ctx, "notification", &entity.Notification{Value: "No Destination defined"})
+			return
+		}
+
+		fmt.Println(destModel.Value)
+
+		dest = destModel.Value
+	} else {
+		setDest, err := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{})
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		if setDest == "" {
+			fmt.Println("No dest defined")
+			// @TODO: Add Notification that no dest is defined
+			return
+		}
+
+		dest = setDest
+	}
+
+	var donwloadUrl = "https://gdtf-share.com/apis/public/downloadFile.php" + "?rid=" + strconv.Itoa(fixture.Rid)
+
+	r, err := http.NewRequest("GET", donwloadUrl, nil)
+
+	if err != nil {
+		fmt.Println("D Error", err.Error())
+	}
+
+	r.AddCookie(a.authCookie)
+	if err != nil {
+		panic(err)
+	}
+
+	client := &http.Client{}
+	res, err := client.Do(r)
+	if err != nil {
+		panic(err)
+	}
+
+	if len(res.Cookies()) > 0 {
+		a.authCookie = res.Cookies()[0]
+		a.authExpired = time.Now().Add(time.Duration(time.Duration(59).Minutes()))
+	}
+
+	defer res.Body.Close()
+
+	var filename = fixture.Manufacturer + " - " + fixture.Fixture + ".gdtf"
+
+	var filePath = dest + "\\" + filename
+
+	fmt.Println(filePath)
+
+	out, _ := os.Create(filePath)
+	defer out.Close()
+
+	_, writeErr := io.Copy(out, res.Body)
+
+	if writeErr != nil {
+		runtime.EventsEmit(a.ctx, "notification", &entity.Notification{Value: "File could not be saved: " + writeErr.Error()})
+		return
+	}
+
+	fmt.Println("Completed")
+
 }

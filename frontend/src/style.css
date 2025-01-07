@@ -1,26 +1,13 @@
-html {
-    background-color: rgba(27, 38, 54, 1);
-    text-align: center;
-    color: white;
+@import "tailwindcss";
+
+.basic-label {
+    @apply uppercase px-5 block text-white mb-2 text-sm;
 }
 
-body {
-    margin: 0;
-    color: white;
-    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+.basic-input {
+    @apply px-5 py-2 border-white border text-white block w-full;  
 }
 
-@font-face {
-    font-family: "Nunito";
-    font-style: normal;
-    font-weight: 400;
-    src: local(""),
-    url("assets/fonts/nunito-v16-latin-regular.woff2") format("woff2");
-}
-
-#app {
-    height: 100vh;
-    text-align: center;
+.basic-button {
+    @apply px-5 py-2 bg-white text-black hover:cursor-pointer outline-none border-white border hover:bg-transparent hover:text-white; 
 }

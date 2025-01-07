@@ -6,6 +6,10 @@ export function CheckAuth() {
   return window['go']['backend']['App']['CheckAuth']();
 }
 
+export function DownloadFixture(arg1, arg2) {
+  return window['go']['backend']['App']['DownloadFixture'](arg1, arg2);
+}
+
 export function GetList() {
   return window['go']['backend']['App']['GetList']();
 }
@@ -20,6 +24,10 @@ export function InitDatabase() {
 
 export function SaveCredentials(arg1, arg2) {
   return window['go']['backend']['App']['SaveCredentials'](arg1, arg2);
+}
+
+export function SetDestFolder() {
+  return window['go']['backend']['App']['SetDestFolder']();
 }
 
 export function SetNotification(arg1) {

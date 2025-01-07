@@ -5,9 +5,7 @@ const FixtureManufacturer = (props: any) => {
         <div>
             { props.fixtures.map((fixtures: any) => {
                 return (
-                    <>
-                        <FixtureItem fixture={fixtures} />
-                    </>
+                    <FixtureItem key={fixtures.rid} fixture={fixtures} />
                 );
             }) }
         </div>

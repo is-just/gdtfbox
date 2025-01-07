@@ -9,6 +9,7 @@ interface ListViewPorps {
 const ListView = (props: ListViewPorps) => {
 
     const [sortedFixtures, setSortedFixtures] = useState<any>([]);
+    const [openManu, setOpenManu] = useState<string | null>();
 
     useEffect(() => {
 
@@ -30,12 +31,16 @@ const ListView = (props: ListViewPorps) => {
     }, [props.fixtures])
 
     return (
-        <div>
+        <div className="p-5">
             { Object.keys(sortedFixtures).map((key) => {
                 return (
-                    <div className="border-white p-5 border">
-                        <div className="border-white border-b">{ key }</div>
-                        <FixtureManufacturer fixtures={sortedFixtures[key]} /> 
+                    <div className="border-white border border-b-0 border-t-0 first:border-t-1" key={key}>
+                        <div className="border-white px-5 py-2 uppercase border-b" onClick={() => openManu === key ? setOpenManu(null) : setOpenManu(key)}>
+                            { key } - { sortedFixtures[key].length }
+                        </div>
+                        <div className={openManu === key ? '' : 'hidden'}>
+                            <FixtureManufacturer key={key} fixtures={sortedFixtures[key]} /> 
+                        </div>
                     </div>
                 )
             }) }

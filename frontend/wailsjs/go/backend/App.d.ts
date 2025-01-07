@@ -5,6 +5,8 @@ import {gorm} from '../models';
 
 export function CheckAuth():Promise<boolean>;
 
+export function DownloadFixture(arg1:entity.GdtfFixture,arg2:boolean):Promise<void>;
+
 export function GetList():Promise<Array<entity.GdtfFixture>>;
 
 export function Greet(arg1:string):Promise<string>;
@@ -12,5 +14,7 @@ export function Greet(arg1:string):Promise<string>;
 export function InitDatabase():Promise<gorm.DB>;
 
 export function SaveCredentials(arg1:string,arg2:string):Promise<boolean>;
+
+export function SetDestFolder():Promise<void>;
 
 export function SetNotification(arg1:string):Promise<void>;
